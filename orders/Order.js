@@ -2,19 +2,15 @@ const mongoose = require("mongoose");
 
 mongoose.model("Order", {
     CustomerID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String, // On stocke l'ID du client sous forme de texte
         required: true
     },
     BookID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String, // On stocke l'ID du livre
         required: true
     },
     initialDate: {
         type: Date,
-        required: true
-    },
-    deliveryDate: {
-        type: Date,
-        required: true
+        default: Date.now
     }
 });
