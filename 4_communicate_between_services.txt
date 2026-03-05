@@ -1,0 +1,42 @@
+1-npm install axios
+
+Étape 2 : Création de microservices avec Node.js et Express
+Dans cette étape, vous devez créer deux microservices simples à l'aide de Node.js et Express. L'un des microservices doit fournir une API qui permet de créer, lire, mettre à jour et supprimer des données. L'autre microservice doit consommer cette API pour afficher les données dans une interface utilisateur.
+
+Étape 4 : Communication entre les microservices avec Axios
+Dans cette étape, vous devez communiquer entre les deux microservices à l'aide d'Axios. Vous devez permettre à l'interface utilisateur de consommer l'API du premier microservice à travers le second microservice.
+
+    // route 4 details order :
+
+    app.get("/order/:id", (req, res) => {
+
+        Order.findById(req.params.id).then((order) => {
+        
+        
+        axios.get("http://localhost:5555/customers/"+order.CustomerID).then((response) => {
+        
+         let orderObject={customerName:response.data.customer.name,bookTitle:''};
+
+         axios.get("http://localhost:4545/books/"+order.BookID).then((response) => {
+        
+         orderObject.bookTitle=response.data.book.title;
+
+        
+         
+         res.json({ "order": orderObject });
+        
+
+
+        })
+
+
+
+        })
+        
+        
+        })
+
+
+    })
+
+

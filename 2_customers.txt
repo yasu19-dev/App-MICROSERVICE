@@ -1,0 +1,147 @@
+/***************Customer.js************/
+
+const mongoose = require("mongoose");
+
+mongoose.model("Customer", {
+    // name  -   email
+    name: {
+        type: String,
+        require: true
+    },
+    email: {
+        type: String,
+        require: true
+    }
+                           
+});
+
+
+/****************customers.js******************/
+
+// Load express
+const express = require("express");
+const app = express();
+
+// load customer model 
+
+require('./Customer')
+
+// Load mongoose
+const mongoose = require("mongoose");
+
+// Load body-parser
+
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+//Connect
+
+
+
+
+ const uri = 'mongodb+srv://fullstack:9W7ViknZZUJRFN1a@library.hzn9f6i.mongodb.net/test';
+
+ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+   .then(() => console.log('Connected to MongoDB !!!'))
+   .catch(err => console.error('Could not connect to MongoDB', err));
+
+// route 1    home
+ 
+
+
+
+
+
+app.get('/', (req, res) =>{
+res. send( "Welcome to customers service !!!")
+})
+
+
+
+// route 2    insert new customer 
+
+
+const  Customer=mongoose.model('Customer')
+app.post("/customer", (req, res) => {
+    var newCustomer = {
+    name: req.body.name,
+    email: req.body.email
+    }
+
+    let customer=new Customer(newCustomer)
+
+    customer.save().then(() => {
+    
+    console. log("New customer created!")
+    res.json({ message: "a new customer added !!!" });
+    }).catch((err) => {
+    
+    if(err){
+    
+    throw err
+    }
+
+   
+
+
+
+}) 
+
+
+
+})
+
+
+
+// route 3 list of customerss
+
+
+app.get('/customers', (req, res) =>{
+  
+    Customer.find().then((customers)=>{
+      console.log(customers)
+      res.json({ 'customers': customers });
+    
+    })
+    
+      })
+    
+    
+    // route 4 getcustomerbyid
+    
+    
+    app.get('/customers/:id', (req, res) =>{
+      
+      Customer.findById(req.params.id).then((customer)=>{
+        if(customer)
+        {
+          res.json({ "customer": customer });
+        }
+      
+      })
+      
+        })
+    
+      // route 5 delete 
+    
+        app.delete('/customers/:id', (req, res) =>{
+      
+          Customer.findOneAndRemove(req.params.id).then(()=>{
+            
+              res.json({ "msg": "customer deleted" });
+          
+          
+          })
+          
+            })
+
+
+
+
+
+
+app. listen(5555, () =>console.log("Up and running! -- This is our customers service"));
+

@@ -1,0 +1,175 @@
+Creating a microservice-based WEB application - with Express.JS and MongoDB
+
+Créer 3 dossiers dans le dossier principal de l'application : 
+
+customers-books-orders
+
+-on va commencer par books : 
+
+-Se positionner dans le dossier books .
+
+-installer les modules : 
+
+         npm install --save express 
+         npm install --save body-parser
+         npm install --save mongoose
+
+-Créer un fichier books.js :
+
+exemple : 
+
+// Load express
+const express = require("express");
+const app = express();
+
+app.get('/', (req, res) =>{
+res. send( "Welcome to books service !!!")
+})
+app. listen(4545, () =>console.log("Up and running! -- This is our Books service"));
+
+
+-Connection to mongo db : 
+
+MongoDB Atlas :  is a Database-as-a-Service (DBaaS) platform that provides a fully managed cloud database service for MongoDB.
+ It can be considered a Platform-as-a-Service (PaaS) offering since it provides a platform for developers to build, run, and manage
+ their applications without having to worry about the underlying infrastructure
+
+https://cloud.mongodb.com/
+
+
+create a database : Library   
+// Load express
+const express = require("express");
+const app = express();
+
+// Load mongoose
+     const mongoose = require("mongoose");
+
+//Connect
+
+const uri = 'mongodb+srv://fullstack:<password>@cluster0.tpvryit.mongodb.net/';
+
+mongoose.connect(uri)
+   .then(() => console.log('Connected to MongoDB !!!'))
+   .catch(err => console.error('Could not connect to MongoDB', err));
+
+
+
+app.get('/', (req, res) =>{
+res. send( "Welcome to books service !!!")
+})
+app. listen(4545, () =>console.log("Up and running! -- This is our Books service"));
+
+
+
+
+
+III-Defining the book model : 
+
+
+
+-créer la route post  :    la tester sur postman 
+
+// route 2
+
+app.post("/book", (req, res) => {
+    res.send("Testing our book route!")
+});
+
+
+
+-créer un fichier Book.js (Model) : 
+
+
+const mongoose = require("mongoose");
+mongoose.model("Book", {
+    // Title, author, numberPages, publisher
+    title: {
+        type: String,
+        require: true
+    },
+    author: {
+        type: String,
+        require: true
+    },
+    numberPages: {
+        type: Number,
+        require: false
+    },
+    publisher: {
+        type: String,
+        require: false
+    }
+                           
+});
+
+-Modifier la route post:
+
+// load Book model 
+
+require('./Book')
+
+// Load body-parser
+
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+const  Book=mongoose.model('Book')
+
+app.post("/book", (req, res) => {
+    var newBook = {
+    title: req.body.title,
+    author: req.body.author,
+    publisher: req.body.publisher
+    }
+
+    let book=new Book(newBook)
+
+    book.save().then(() => {
+    
+    console. log("New book created!")
+    res.json({ message: "a new book added !!!" });
+    }).catch((err) => {
+    
+    if(err){
+    
+    throw err
+    }
+
+}) 
+
+
+})
+
+-display, search and delete books:
+// route list of books
+app.get('/books', (req, res) =>{  
+  Book.find().then((books)=>{
+    console.log(books)
+    res.json({ 'books': books });
+
+  })
+})
+
+// route 3 getbookbyid
+app.get('/books/:id', (req, res) =>{  
+  Book.findById(req.params.id).then((book)=>{
+    if(book)
+    {
+      res.json({ book: book });
+    } else{
+      res.sendStatus(404);
+    } 
+  })  
+})
+
+// route 5 delete 
+app.delete('/books/:id', (req, res) =>{
+        Book.findByIdAndRemove(req.params.id).then(()=>{        
+          res.json({ "msg": "book deleted" });           
+      })
+})

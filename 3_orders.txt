@@ -1,0 +1,137 @@
+/*******************Order.js**********************/
+
+
+const mongoose = require("mongoose");
+
+mongoose.model("Order", {
+    // CustomerID  -   BookID   -  initialdate   -   deliverydate
+    CustomerID: {
+        type: mongoose.Types.ObjectId,
+        require: true
+    },
+    BookID: {
+        type: mongoose.Types.ObjectId,
+        require: true
+    },
+    initialDate: {
+        type: Date,
+        require: true
+    },
+    deliveryDate: {
+        type: Date,
+        require: true
+    }
+                           
+});
+
+
+
+
+/****************orders.js*********************/
+
+
+// Load express
+const express = require("express");
+const app = express();
+
+const {  ObjectId } = require('mongodb');
+
+
+
+// load Order model 
+
+require('./Order')
+
+// Load mongoose
+const mongoose = require("mongoose");
+
+// Load body-parser
+
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+//Connect
+
+
+
+
+ const uri = 'mongodb+srv://fullstack:9W7ViknZZUJRFN1a@library.hzn9f6i.mongodb.net/test';
+
+ mongoose.connect(uri)
+   .then(() => console.log('Connected to MongoDB !!!'))
+   .catch(err => console.error('Could not connect to MongoDB', err));
+
+// route 1    home
+ 
+
+
+
+
+
+app.get('/', (req, res) =>{
+res. send( "Welcome to orders service !!!")
+})
+
+
+
+// route 2    insert new Order 
+
+
+const  Order=mongoose.model('Order')
+app.post("/order", (req, res) => {
+    var newOrder = {
+        CustomerID: new ObjectId(req.body.CustomerID),// convert string param to ID
+        BookID:new ObjectId(req.body.BookID),
+        initialDate:req.body.initialDate,
+        deliveryDate:req.body.deliveryDate
+    }
+
+    let order=new Order(newOrder)
+
+    order.save().then(() => {
+    
+    console. log("New order created!")
+    res.json({ "message": "a new order added !!!" });
+    }).catch((err) => {
+    
+    if(err){
+    
+    throw err
+    }
+
+   
+
+
+
+}) 
+
+
+
+})
+
+
+
+// route 3 list of orders
+
+
+app.get('/orders', (req, res) =>{
+  
+    Order.find().then((orders)=>{
+      console.log(orders)
+      res.json({ 'orders': orders });
+    
+    })
+    
+      })
+    
+    
+    
+
+
+app. listen(6666, () =>console.log("Up and running! -- This is our orders service"));
+
+
+

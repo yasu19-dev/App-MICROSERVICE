@@ -1,0 +1,16 @@
+# Dépendances (Node.js)
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environnement
+.env
+**/.env
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+
+# Fichiers de bureautique (Optionnel)
+*.docx
